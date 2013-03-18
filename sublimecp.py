@@ -49,6 +49,161 @@ if sublime.platform() == 'windows':
 
 
 class ColorPickCommand(sublime_plugin.TextCommand):
+    # SVG Colors spec: http://www.w3.org/TR/css3-color/#svg-color
+    SVGColors = {
+        "aliceblue": "F0F8FF",
+        "antiquewhite": "FAEBD7",
+        "aqua": "00FFFF",
+        "aquamarine": "7FFFD4",
+        "azure": "F0FFFF",
+        "beige": "F5F5DC",
+        "bisque": "FFE4C4",
+        "black": "000000",
+        "blanchedalmond": "FFEBCD",
+        "blue": "0000FF",
+        "blueviolet": "8A2BE2",
+        "brown": "A52A2A",
+        "burlywood": "DEB887",
+        "cadetblue": "5F9EA0",
+        "chartreuse": "7FFF00",
+        "chocolate": "D2691E",
+        "coral": "FF7F50",
+        "cornflowerblue": "6495ED",
+        "cornsilk": "FFF8DC",
+        "crimson": "DC143C",
+        "cyan": "00FFFF",
+        "darkblue": "00008B",
+        "darkcyan": "008B8B",
+        "darkgoldenrod": "B8860B",
+        "darkgray": "A9A9A9",
+        "darkgreen": "006400",
+        "darkgrey": "A9A9A9",
+        "darkkhaki": "BDB76B",
+        "darkmagenta": "8B008B",
+        "darkolivegreen": "556B2F",
+        "darkorange": "FF8C00",
+        "darkorchid": "9932CC",
+        "darkred": "8B0000",
+        "darksalmon": "E9967A",
+        "darkseagreen": "8FBC8F",
+        "darkslateblue": "483D8B",
+        "darkslategray": "2F4F4F",
+        "darkslategrey": "2F4F4F",
+        "darkturquoise": "00CED1",
+        "darkviolet": "9400D3",
+        "deeppink": "FF1493",
+        "deepskyblue": "00BFFF",
+        "dimgray": "696969",
+        "dimgrey": "696969",
+        "dodgerblue": "1E90FF",
+        "firebrick": "B22222",
+        "floralwhite": "FFFAF0",
+        "forestgreen": "228B22",
+        "fuchsia": "FF00FF",
+        "gainsboro": "DCDCDC",
+        "ghostwhite": "F8F8FF",
+        "gold": "FFD700",
+        "goldenrod": "DAA520",
+        "gray": "808080",
+        "green": "008000",
+        "greenyellow": "ADFF2F",
+        "grey": "808080",
+        "honeydew": "F0FFF0",
+        "hotpink": "FF69B4",
+        "indianred": "CD5C5C",
+        "indigo": "4B0082",
+        "ivory": "FFFFF0",
+        "khaki": "F0E68C",
+        "lavender": "E6E6FA",
+        "lavenderblush": "FFF0F5",
+        "lawngreen": "7CFC00",
+        "lemonchiffon": "FFFACD",
+        "lightblue": "ADD8E6",
+        "lightcoral": "F08080",
+        "lightcyan": "E0FFFF",
+        "lightgoldenrodyellow": "FAFAD2",
+        "lightgray": "D3D3D3",
+        "lightgreen": "90EE90",
+        "lightgrey": "D3D3D3",
+        "lightpink": "FFB6C1",
+        "lightsalmon": "FFA07A",
+        "lightseagreen": "20B2AA",
+        "lightskyblue": "87CEFA",
+        "lightslategray": "778899",
+        "lightslategrey": "778899",
+        "lightsteelblue": "B0C4DE",
+        "lightyellow": "FFFFE0",
+        "lime": "00FF00",
+        "limegreen": "32CD32",
+        "linen": "FAF0E6",
+        "magenta": "FF00FF",
+        "maroon": "800000",
+        "mediumaquamarine": "66CDAA",
+        "mediumblue": "0000CD",
+        "mediumorchid": "BA55D3",
+        "mediumpurple": "9370DB",
+        "mediumseagreen": "3CB371",
+        "mediumslateblue": "7B68EE",
+        "mediumspringgreen": "00FA9A",
+        "mediumturquoise": "48D1CC",
+        "mediumvioletred": "C71585",
+        "midnightblue": "191970",
+        "mintcream": "F5FFFA",
+        "mistyrose": "FFE4E1",
+        "moccasin": "FFE4B5",
+        "navajowhite": "FFDEAD",
+        "navy": "000080",
+        "oldlace": "FDF5E6",
+        "olive": "808000",
+        "olivedrab": "6B8E23",
+        "orange": "FFA500",
+        "orangered": "FF4500",
+        "orchid": "DA70D6",
+        "palegoldenrod": "EEE8AA",
+        "palegreen": "98FB98",
+        "paleturquoise": "AFEEEE",
+        "palevioletred": "DB7093",
+        "papayawhip": "FFEFD5",
+        "peachpuff": "FFDAB9",
+        "peru": "CD853F",
+        "pink": "FFC0CB",
+        "plum": "DDA0DD",
+        "powderblue": "B0E0E6",
+        "purple": "800080",
+        "red": "FF0000",
+        "rosybrown": "BC8F8F",
+        "royalblue": "4169E1",
+        "saddlebrown": "8B4513",
+        "salmon": "FA8072",
+        "sandybrown": "F4A460",
+        "seagreen": "2E8B57",
+        "seashell": "FFF5EE",
+        "sienna": "A0522D",
+        "silver": "C0C0C0",
+        "skyblue": "87CEEB",
+        "slateblue": "6A5ACD",
+        "slategray": "708090",
+        "slategrey": "708090",
+        "snow": "FFFAFA",
+        "springgreen": "00FF7F",
+        "steelblue": "4682B4",
+        "tan": "D2B48C",
+        "teal": "008080",
+        "thistle": "D8BFD8",
+        "tomato": "FF6347",
+        "turquoise": "40E0D0",
+        "violet": "EE82EE",
+        "wheat": "F5DEB3",
+        "white": "FFFFFF",
+        "whitesmoke": "F5F5F5",
+        "yellow": "FFFF00",
+        "yellowgreen": "9ACD32"
+    }
+    isRGB = False
+    isRGBA = False
+    colorLine = None
+    opacity = 1
+
     def run(self, edit):
         paste = None
         sel = self.view.sel()
@@ -59,12 +214,30 @@ class ColorPickCommand(sublime_plugin.TextCommand):
         # get the currently selected color - if any
         if len(sel) > 0:
             selected = self.view.substr(self.view.word(sel[0])).strip()
-            if selected.startswith('#'): selected = selected[1:]
+            if selected.startswith('#'):
+                selected = selected[1:]
+            elif self.__is_valid_hex_color(selected):
+                selected = selected
+            else:
+                self.colorLine = RgbaColorLine(self.view.substr(self.view.line(sel[0])), self.view.line(sel[0]).begin(), sel[0].begin())
+                selected = self.colorLine.get_color()
+
+                if selected.startswith('rgba'):
+                    self.isRGBA = True
+                    selected = self.__rgba_to_hex(selected[4:])
+                elif selected.startswith('rgb'):
+                    print selected[3:]
+                    self.isRGB = True
+                    selected = self.__rgba_to_hex(selected[3:])
+
+            svg_color_hex = self.SVGColors.get(selected, None)
+            if svg_color_hex != None:
+                selected = svg_color_hex
+
             if self.__is_valid_hex_color(selected):
                 start_color = "#" + selected
                 start_color_osx = selected
                 start_color_win = self.__hexstr_to_bgr(selected)
-                
 
         if sublime.platform() == 'windows':
 
@@ -74,7 +247,7 @@ class ColorPickCommand(sublime_plugin.TextCommand):
             if len(custom_colors) < 16:
                 custom_colors = ['0']*16
                 s.set('custom_colors', custom_colors)
-                
+
             cc = CHOOSECOLOR()
             ctypes.memset(ctypes.byref(cc), 0, ctypes.sizeof(cc))
             cc.lStructSize = ctypes.sizeof(cc)
@@ -88,14 +261,13 @@ class ColorPickCommand(sublime_plugin.TextCommand):
             else:
                 color = None
 
-
         elif sublime.platform() == 'osx':
             location = os.path.join(sublime.packages_path(), 'ColorPicker', 'lib', 'osx_colorpicker')
             args = [location]
 
             if not os.access(location, os.X_OK):
                 os.chmod(location, 0755)
-                
+
             if start_color_osx:
                 args.append('-startColor')
                 args.append(start_color_osx)
@@ -106,30 +278,39 @@ class ColorPickCommand(sublime_plugin.TextCommand):
 
             if not os.access(location, os.X_OK):
                 os.chmod(location, 0755)
-            
+
             if start_color:
                 args.append(start_color)
-
 
         if sublime.platform() == 'osx' or sublime.platform() == 'linux':
             proc = subprocess.Popen(args, stdout=subprocess.PIPE)
             color = proc.communicate()[0].strip()
 
         if color:
+            # Check wether the color is a rgb or rgba color.
+            if self.isRGB or self.isRGBA:
+                color = self.__hex_to_rgba(color)
+                row = self.colorLine.get_color_line(color)
+                begin = self.view.line(sel[0]).begin()
+                end = self.view.line(sel[0]).end()
+                region = sublime.Region(begin, end)
+                self.view.replace(edit, region, row)
+                self.colorLine = None
+            else:
+                color = '#' + color
             # replace all regions with color
-            for region in sel:
-                word = self.view.word(region)
-                # if the selected word is a valid color, replace it
-                if self.__is_valid_hex_color(self.view.substr(word)):
-                    # include '#' if present
-                    if self.view.substr(word.a - 1) == '#':
-                        word = sublime.Region(word.a - 1, word.b)
-                    # replace
-                    self.view.replace(edit, word, '#' + color)
-                # otherwise just replace the selected region
-                else:
-                    self.view.replace(edit, region, '#' + color)
-                    
+                for region in sel:
+                    word = self.view.word(region)
+                    # if the selected word is a valid color, replace it
+                    if self.__is_valid_hex_color(self.view.substr(word)):
+                        # include '#' if present
+                        if self.view.substr(word.a - 1) == '#':
+                            word = sublime.Region(word.a - 1, word.b)
+                        # replace
+                        self.view.replace(edit, word, color)
+                    # otherwise just replace the selected region
+                    else:
+                        self.view.replace(edit, region, color)
 
     def __get_pixel(self):
         hdc = GetDC(0)
@@ -174,3 +355,93 @@ class ColorPickCommand(sublime_plugin.TextCommand):
         g = int(hexstr[2:4], 16)
         b = int(hexstr[4:6], 16)
         return (b << 16)| (g << 8) | r
+
+    def __rgba_to_hex(self, pColor):
+        result = ''
+        tmp = pColor.strip()
+        vals = tmp.split(',')
+
+        if len(vals) == 4:
+            end = vals[3].find(')')
+            if end == -1:
+                self.opacity = vals[3].strip()
+            else:
+                self.opacity = vals[3][:end].strip()
+
+        for val in vals[:3]:
+            print val + ' | '
+            if val[0] == '(':
+                val = val[1:].strip()
+
+            if val.find(')') != -1:
+                val = val[0:val.find(')')]
+
+            result += ('0' + hex(int(val.strip()))[2:])[-2:]
+
+        return result
+
+    def __hex_to_rgba(self, pColor):
+        result = ''
+
+        r = str(int(pColor[0:2], 16))
+        g = str(int(pColor[2:4], 16))
+        b = str(int(pColor[4:6], 16))
+
+        if self.isRGB:
+            result = 'rgb(' + r + ', ' + g + ', ' + b + ')'
+        elif self.isRGBA:
+            result = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + self.opacity + ')'
+
+        return result
+
+
+class RgbaColorLine():
+    # Class for managing line with one or more rgb(a)-colors
+    row = ''
+    rowBeginPos = 0
+    cursorPos = 0
+    colors = []
+    selectedColor = 0
+
+    def __init__(self, row, startPos, cursorPos):
+        self.row = row
+        self.rowBeginPos = startPos
+        self.cursorPos = cursorPos
+        self.__extract_colors()
+        if not self.colors[0]['color'] == 'empty':
+            self.__get_selected_color()
+
+    def __extract_colors(self):
+        # Extract all the colors from the line
+        color = None
+        count = self.row.count('rgb')
+        end = 0
+
+        if count == 0:
+            color = {'color': 'empty'}
+            self.colors.append(color)
+        else:
+            for i in range(count):
+                begin = self.row.find('rgb', end)
+                end = self.row.find(')', begin) + 1
+                color = {'color': self.row[begin:end], 'begin': begin, 'end': end}
+                self.colors.append(color)
+
+    def __get_selected_color(self):
+        # Get the color where the cursor is set
+        cursor = self.cursorPos - self.rowBeginPos
+        for color in range(len(self.colors)):
+            if self.colors[color]['begin'] < cursor and self.colors[color]['end'] > cursor:
+                self.selectedColor = color
+                break
+
+    def get_color(self):
+        # return the selected color
+        return self.colors[self.selectedColor]['color']
+
+    def get_color_line(self, color):
+        # return the line with new color
+        begin = self.colors[self.selectedColor]['begin']
+        end = self.colors[self.selectedColor]['end']
+
+        return self.row[0:begin] + color + self.row[end:len(self.row)]
